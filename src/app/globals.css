@@ -1,0 +1,222 @@
+@import "tailwindcss";
+
+/* LTS design tokens — see docs/03-design-system.md */
+@theme {
+  --color-ink: #111111;
+  --color-ink-deep: #0a0a0a;
+  /* Surfaces: warm neutrals so the lime accent stands out (were pale greens) */
+  --color-mist-50: #f7f7f4;
+  --color-mist-100: #efefea;
+  --color-mist-200: #e3e3dc;
+  --color-mist-400: #8db956;
+  --color-whatsapp: #25d366;
+
+  /* Hairline used for dividers and quiet borders */
+  --color-line: rgb(17 17 17 / 0.1);
+
+  --radius-card: 18px;
+
+  /* Elevation: soft, layered shadows (replace the old hard offset shadows) */
+  --shadow-soft: 0 1px 2px rgb(17 17 17 / 0.04), 0 18px 40px -20px rgb(17 17 17 / 0.22);
+  --shadow-lift: 0 1px 2px rgb(17 17 17 / 0.05), 0 28px 60px -24px rgb(76 29 149 / 0.32);
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-yanone), "Arial Narrow", sans-serif;
+}
+
+/* Base styles live in the base layer so Tailwind utility classes can override them */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: #ffffff;
+    color: var(--color-gray-700);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-violet-600);
+    outline-offset: 2px;
+  }
+}
+
+/* ---- Motion: calm and minimal ----
+   Sections fade up once when they scroll into view (see the Reveal component).
+   Content is only hidden after JavaScript has started, so it is never lost. */
+[data-reveal="pending"] {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.7s ease-out, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Cards: lift with a soft shadow on hover. Hard offset shadows and glows are retired. */
+a.rounded-card,
+article.rounded-card {
+  transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.25s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
+
+/* ---- Page transitions (React <ViewTransition>, see app/layout.tsx) ----
+   Only the page content crossfades; header and floating buttons stay put.
+   Browsers without View Transitions simply switch pages instantly. */
+:root {
+  view-transition-name: none;
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(.page) {
+  animation: none;
+}
+
+::view-transition-old(.page) {
+  animation: 140ms ease-out both lts-vt-out;
+}
+
+::view-transition-new(.page) {
+  animation: 260ms cubic-bezier(0.2, 0.7, 0.2, 1) 60ms both lts-vt-in;
+}
+
+@keyframes lts-vt-out {
+  to { opacity: 0; }
+}
+
+@keyframes lts-vt-in {
+  from { opacity: 0; translate: 0 10px; }
+}
+
+/* Anchored UI: never animates, always on top */
+::view-transition-group(site-header),
+::view-transition-group(quick-bar),
+::view-transition-group(wa-float) {
+  animation: none;
+  z-index: 100;
+}
+
+::view-transition-old(site-header),
+::view-transition-old(quick-bar),
+::view-transition-old(wa-float) {
+  display: none;
+}
+
+::view-transition-new(site-header),
+::view-transition-new(quick-bar),
+::view-transition-new(wa-float) {
+  animation: none;
+}
+
+/* Industry photos morph from card to page hero */
+::view-transition-group(.morph) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: 50;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* ---- Homepage hero motion (components/home/hero) ----
+   Elements are visible by default; animations only add the entrance.
+   With reduced motion they are switched off and everything simply shows. */
+@keyframes lts-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes lts-drop {
+  from { opacity: 0; transform: translateY(-14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes lts-rise {
+  from { transform: scaleY(0.12); }
+  to { transform: scaleY(1); }
+}
+@keyframes lts-typing {
+  0% { opacity: 0; }
+  12%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes lts-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes lts-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes lts-word {
+  from { opacity: 0; transform: translateY(0.3em); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes lts-dot {
+  0%, 80%, 100% { opacity: 0.3; transform: none; }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lts-anim { animation: none !important; }
+}
+
+
+/* Printing a checklist: hide the site chrome so only the content prints */
+@media print {
+  header, footer, nav[aria-label="Quick contact"], nav[aria-label="On this page"], [data-no-print] { display: none !important; }
+  body { background: #fff !important; }
+}
+
+
+/* Hindi / Telugu: use fonts that have these scripts, and give tall letters room (the English display font is tight) */
+html[lang="hi"] {
+  --font-sans: var(--font-noto-deva), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-noto-deva), var(--font-inter), sans-serif;
+}
+html[lang="te"] {
+  --font-sans: var(--font-noto-telugu), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-noto-telugu), var(--font-inter), sans-serif;
+}
+html[lang="hi"] .font-display {
+  font-family: var(--font-noto-deva), var(--font-inter), sans-serif;
+}
+html[lang="te"] .font-display {
+  font-family: var(--font-noto-telugu), var(--font-inter), sans-serif;
+}
+html[lang="hi"] .font-display,
+html[lang="te"] .font-display {
+  line-height: 1.22 !important;
+  letter-spacing: 0 !important;
+  font-weight: 700;
+}
+
+/* Hindi/Telugu glyphs are wider than the condensed English headline font, so the big headings step down a size */
+html[lang="hi"] h1.font-display,
+html[lang="te"] h1.font-display { font-size: clamp(30px, 6.2vw, 54px) !important; }
+html[lang="hi"] h2.font-display,
+html[lang="te"] h2.font-display { font-size: clamp(26px, 4.6vw, 40px) !important; }
