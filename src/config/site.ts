@@ -10,13 +10,13 @@ export const site = {
   tagline: "Software · AI · Marketing — Hyderabad",
   description:
     "Websites, mobile apps, custom software, AI bots, automation and digital marketing for growing businesses — one team in Hyderabad.",
-  url: "https://example.com", // [replace with your domain]
+  url: "https://lts-website-pi.vercel.app", // temporary Vercel address — change to https://laadhyatechsolutions.com once the domain is bought and connected
 
   contact: {
     phone: "+91 80190 21898",
     phoneHref: "tel:+918019021898",
     whatsappNumber: "918019021898", // country code + number, digits only
-    email: "info@example.com", // [replace]
+    email: "laadhyatechsolutions@gmail.com", // switch to a domain address (e.g. info@laadhyatechsolutions.com) later
     address: "[Office address], Hyderabad, Telangana",
     hours: "Mon–Sat, 10:00 am – 7:00 pm",
     /** Used for the live "Open now" badge (India time). Days: 0 = Sunday … 6 = Saturday. Keep in step with `hours`. */
